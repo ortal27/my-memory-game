@@ -10,10 +10,20 @@ const GameBoardWrapper = styled.div`
   /* Add styling for the game board */
 `;
 
+const ScoreWrapper = styled.div`
+  /* Add styling for the score */
+`;
+
+const VictoryMessage = styled.div`
+  /* Add styling for the victory message */
+`;
+
 const GameBoard: React.FC<GameBoardProps> = ({}) => {
   const [cards, setCards] = useState<string[]>([]);
   const [flippedCards, setFlippedCards] = useState<number[]>([]);
   const [matchedCards, setMatchedCards] = useState<number[]>([]);
+  const [score, setScore] = useState(0);
+  const [gameComplete, setGameComplete] = useState(false);
 
   const cardValues = [
     "cat",
@@ -34,10 +44,22 @@ const GameBoard: React.FC<GameBoardProps> = ({}) => {
     setCards(shuffledCards);
   }, []);
 
-  const handleCardClick = (index: number) => {
-    console.log("here");
+  useEffect(() => {
+    // Check for game completion
+    if (matchedCards.length > 0 && matchedCards.length === cards.length) {
+      console.log("matchedCards", matchedCards);
 
-    if (flippedCards.includes(index) || matchedCards.includes(index)) return;
+      setGameComplete(true);
+    }
+  }, [matchedCards, cards]);
+
+  const handleCardClick = (index: number) => {
+    if (
+      gameComplete ||
+      flippedCards.includes(index) ||
+      matchedCards.includes(index)
+    )
+      return;
 
     const newFlippedCards = [...flippedCards, index];
     setFlippedCards(newFlippedCards);
@@ -47,26 +69,39 @@ const GameBoard: React.FC<GameBoardProps> = ({}) => {
       if (cards[firstIndex] === cards[secondIndex]) {
         // Match found
         setMatchedCards([...matchedCards, firstIndex, secondIndex]);
+        setFlippedCards([]);
       } else {
         // No match
         setTimeout(() => {
           setFlippedCards([]);
         }, 1000);
       }
+      setScore(score + 1);
     }
   };
 
   return (
     <GameBoardWrapper>
-      {/* Render the cards */}
-      {cards.map((value, index) => (
-        <Card
-          key={index}
-          value={value}
-          onClick={() => handleCardClick(index)}
-          flipped={flippedCards.includes(index) || matchedCards.includes(index)}
-        />
-      ))}
+      {gameComplete ? (
+        <VictoryMessage>
+          Congratulations! You've won the game with a score of {score}.
+        </VictoryMessage>
+      ) : (
+        <>
+          <ScoreWrapper>Score: {score}</ScoreWrapper>
+          {/* Render the cards */}
+          {cards.map((value, index) => (
+            <Card
+              key={index}
+              value={value}
+              onClick={() => handleCardClick(index)}
+              flipped={
+                flippedCards.includes(index) || matchedCards.includes(index)
+              }
+            />
+          ))}
+        </>
+      )}
     </GameBoardWrapper>
   );
 };
