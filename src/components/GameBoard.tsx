@@ -14,6 +14,13 @@ const ScoreWrapper = styled.div`
   /* Add styling for the score */
 `;
 
+const TimerWrapper = styled.div`
+  /* Add styling for the timer */
+`;
+
+const ResetButton = styled.button`
+  /* Add styling for the reset button */
+`;
 const VictoryMessage = styled.div`
   /* Add styling for the victory message */
 `;
@@ -24,6 +31,8 @@ const GameBoard: React.FC<GameBoardProps> = ({}) => {
   const [matchedCards, setMatchedCards] = useState<number[]>([]);
   const [score, setScore] = useState(0);
   const [gameComplete, setGameComplete] = useState(false);
+  const [resetGame, setResetGame] = useState(false);
+  const [startTime, setStartTime] = useState(0);
 
   const cardValues = [
     "cat",
@@ -42,18 +51,30 @@ const GameBoard: React.FC<GameBoardProps> = ({}) => {
       () => Math.random() - 0.5
     );
     setCards(shuffledCards);
-  }, []);
+    // Reset the game
+    if (resetGame) {
+      setGameComplete(false);
+      setScore(0);
+      setResetGame(false);
+      setFlippedCards([]);
+      setMatchedCards([]);
+      setStartTime(0);
+    }
+  }, [resetGame]);
 
   useEffect(() => {
     // Check for game completion
     if (matchedCards.length > 0 && matchedCards.length === cards.length) {
-      console.log("matchedCards", matchedCards);
-
       setGameComplete(true);
     }
   }, [matchedCards, cards]);
 
   const handleCardClick = (index: number) => {
+    // Start the timer
+    if (startTime === 0) {
+      setStartTime(Date.now());
+    }
+
     if (
       gameComplete ||
       flippedCards.includes(index) ||
@@ -80,14 +101,31 @@ const GameBoard: React.FC<GameBoardProps> = ({}) => {
     }
   };
 
+  const handleResetGame = () => {
+    setResetGame(true);
+  };
+
   return (
     <GameBoardWrapper>
       {gameComplete ? (
-        <VictoryMessage>
-          Congratulations! You've won the game with a score of {score}.
-        </VictoryMessage>
+        <>
+          <VictoryMessage>
+            Congratulations! You've won the game with a score of {score}.
+          </VictoryMessage>
+          <TimerWrapper>
+            Time: {((Date.now() - startTime) / 1000).toFixed(1)} seconds
+          </TimerWrapper>
+        </>
       ) : (
         <>
+          <ResetButton onClick={handleResetGame}>Reset Game</ResetButton>
+          <TimerWrapper>
+            Time:{" "}
+            {startTime === 0
+              ? "00:00"
+              : ((Date.now() - startTime) / 1000).toFixed(1)}{" "}
+            seconds
+          </TimerWrapper>
           <ScoreWrapper>Score: {score}</ScoreWrapper>
           {/* Render the cards */}
           {cards.map((value, index) => (
