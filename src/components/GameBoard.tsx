@@ -24,6 +24,9 @@ const ResetButton = styled.button`
 const VictoryMessage = styled.div`
   /* Add styling for the victory message */
 `;
+const DifficultySelector = styled.select`
+  /* Add styling for the difficulty selector */
+`;
 
 const GameBoard: React.FC<GameBoardProps> = ({}) => {
   const [cards, setCards] = useState<string[]>([]);
@@ -33,6 +36,7 @@ const GameBoard: React.FC<GameBoardProps> = ({}) => {
   const [gameComplete, setGameComplete] = useState(false);
   const [resetGame, setResetGame] = useState(false);
   const [startTime, setStartTime] = useState(0);
+  const [difficultyLevel, setDifficultyLevel] = useState("medium");
 
   const cardValues = [
     "cat",
@@ -46,11 +50,29 @@ const GameBoard: React.FC<GameBoardProps> = ({}) => {
   ];
 
   useEffect(() => {
-    // Shuffle the card values
-    const shuffledCards = [...cardValues, ...cardValues].sort(
-      () => Math.random() - 0.5
-    );
+    // Generate cards based on the selected difficulty level
+    let numCards: number;
+    switch (difficultyLevel) {
+      case "easy":
+        numCards = 8;
+        break;
+      case "medium":
+        numCards = 12;
+        break;
+      case "hard":
+        numCards = 16;
+        break;
+      default:
+        numCards = 12; // Default to medium difficulty
+    }
+    console.log("numCards", numCards);
+
+    const shuffledCards = cardValues
+      .slice(0, numCards / 2)
+      .flatMap((value) => [value, value])
+      .sort(() => Math.random() - 0.5);
     setCards(shuffledCards);
+
     // Reset the game
     if (resetGame) {
       setGameComplete(false);
@@ -60,7 +82,7 @@ const GameBoard: React.FC<GameBoardProps> = ({}) => {
       setMatchedCards([]);
       setStartTime(0);
     }
-  }, [resetGame]);
+  }, [resetGame, difficultyLevel]);
 
   useEffect(() => {
     // Check for game completion
@@ -119,6 +141,14 @@ const GameBoard: React.FC<GameBoardProps> = ({}) => {
       ) : (
         <>
           <ResetButton onClick={handleResetGame}>Reset Game</ResetButton>
+          <DifficultySelector
+            value={difficultyLevel}
+            onChange={(e) => setDifficultyLevel(e.target.value)}
+          >
+            <option value="easy">Easy</option>
+            <option value="medium">Medium</option>
+            <option value="hard">Hard</option>
+          </DifficultySelector>
           <TimerWrapper>
             Time:{" "}
             {startTime === 0
