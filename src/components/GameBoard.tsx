@@ -28,6 +28,10 @@ const DifficultySelector = styled.select`
   /* Add styling for the difficulty selector */
 `;
 
+const ThemeSelector = styled.select`
+  /* Add styling for the theme selector */
+`;
+
 const GameBoard: React.FC<GameBoardProps> = ({}) => {
   const [cards, setCards] = useState<string[]>([]);
   const [flippedCards, setFlippedCards] = useState<number[]>([]);
@@ -37,17 +41,40 @@ const GameBoard: React.FC<GameBoardProps> = ({}) => {
   const [resetGame, setResetGame] = useState(false);
   const [startTime, setStartTime] = useState(0);
   const [difficultyLevel, setDifficultyLevel] = useState("medium");
+  const [theme, setTheme] = useState("animals");
 
-  const cardValues = [
-    "cat",
-    "dog",
-    "bird",
-    "fish",
-    "rabbit",
-    "turtle",
-    "horse",
-    "elephant",
-  ];
+  const themeCardValues: { [key: string]: string[] } = {
+    animals: [
+      "cat",
+      "dog",
+      "bird",
+      "fish",
+      "rabbit",
+      "turtle",
+      "horse",
+      "elephant",
+    ],
+    fruits: [
+      "apple",
+      "banana",
+      "orange",
+      "grape",
+      "strawberry",
+      "watermelon",
+      "kiwi",
+      "pineapple",
+    ],
+    colors: [
+      "red",
+      "blue",
+      "green",
+      "yellow",
+      "orange",
+      "purple",
+      "pink",
+      "brown",
+    ],
+  };
 
   useEffect(() => {
     // Generate cards based on the selected difficulty level
@@ -65,9 +92,7 @@ const GameBoard: React.FC<GameBoardProps> = ({}) => {
       default:
         numCards = 12; // Default to medium difficulty
     }
-    console.log("numCards", numCards);
-
-    const shuffledCards = cardValues
+    const shuffledCards = themeCardValues[theme]
       .slice(0, numCards / 2)
       .flatMap((value) => [value, value])
       .sort(() => Math.random() - 0.5);
@@ -82,7 +107,7 @@ const GameBoard: React.FC<GameBoardProps> = ({}) => {
       setMatchedCards([]);
       setStartTime(0);
     }
-  }, [resetGame, difficultyLevel]);
+  }, [resetGame, difficultyLevel, theme]);
 
   useEffect(() => {
     // Check for game completion
@@ -149,6 +174,14 @@ const GameBoard: React.FC<GameBoardProps> = ({}) => {
             <option value="medium">Medium</option>
             <option value="hard">Hard</option>
           </DifficultySelector>
+          <ThemeSelector
+            value={theme}
+            onChange={(e) => setTheme(e.target.value)}
+          >
+            <option value="animals">Animals</option>
+            <option value="fruits">Fruits</option>
+            <option value="colors">Colors</option>
+          </ThemeSelector>
           <TimerWrapper>
             Time:{" "}
             {startTime === 0
