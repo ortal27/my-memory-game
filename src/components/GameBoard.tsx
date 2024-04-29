@@ -32,6 +32,10 @@ const ThemeSelector = styled.select`
   /* Add styling for the theme selector */
 `;
 
+const SizeSelector = styled.select`
+  /* Add styling for the size selector */
+`;
+
 const GameBoard: React.FC<GameBoardProps> = ({}) => {
   const [cards, setCards] = useState<string[]>([]);
   const [flippedCards, setFlippedCards] = useState<number[]>([]);
@@ -42,6 +46,7 @@ const GameBoard: React.FC<GameBoardProps> = ({}) => {
   const [startTime, setStartTime] = useState(0);
   const [difficultyLevel, setDifficultyLevel] = useState("medium");
   const [theme, setTheme] = useState("animals");
+  const [size, setSize] = useState("medium"); // Default size
 
   const themeCardValues: { [key: string]: string[] } = {
     animals: [
@@ -79,18 +84,18 @@ const GameBoard: React.FC<GameBoardProps> = ({}) => {
   useEffect(() => {
     // Generate cards based on the selected difficulty level
     let numCards: number;
-    switch (difficultyLevel) {
-      case "easy":
+    switch (size) {
+      case "small":
         numCards = 8;
         break;
       case "medium":
         numCards = 12;
         break;
-      case "hard":
+      case "large":
         numCards = 16;
         break;
       default:
-        numCards = 12; // Default to medium difficulty
+        numCards = 12; // Default to medium size
     }
     const shuffledCards = themeCardValues[theme]
       .slice(0, numCards / 2)
@@ -107,7 +112,7 @@ const GameBoard: React.FC<GameBoardProps> = ({}) => {
       setMatchedCards([]);
       setStartTime(0);
     }
-  }, [resetGame, difficultyLevel, theme]);
+  }, [resetGame, size, difficultyLevel, theme]);
 
   useEffect(() => {
     // Check for game completion
@@ -182,6 +187,11 @@ const GameBoard: React.FC<GameBoardProps> = ({}) => {
             <option value="fruits">Fruits</option>
             <option value="colors">Colors</option>
           </ThemeSelector>
+          <SizeSelector value={size} onChange={(e) => setSize(e.target.value)}>
+            <option value="small">Small</option>
+            <option value="medium">Medium</option>
+            <option value="large">Large</option>
+          </SizeSelector>
           <TimerWrapper>
             Time:{" "}
             {startTime === 0
