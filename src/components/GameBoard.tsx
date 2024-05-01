@@ -1,13 +1,22 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import Card from "./Card";
-
+import GlobalStyle from "../GlobalStyles";
 interface GameBoardProps {
   // Define any props needed for the GameBoard component
 }
 
+const Container = styled.div`
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+`;
+
 const GameBoardWrapper = styled.div`
-  /* Add styling for the game board */
+  display: flex;
+  flex-direction: column;
+  //flex-wrap: wrap;
+  justify-content: center;
 `;
 
 const ScoreWrapper = styled.div`
@@ -34,6 +43,15 @@ const ThemeSelector = styled.select`
 
 const SizeSelector = styled.select`
   /* Add styling for the size selector */
+`;
+const Header = styled.div`
+  display: flex;
+  gap: 10px;
+`;
+const Cards = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 50px;
 `;
 
 const GameBoard: React.FC<GameBoardProps> = ({}) => {
@@ -158,62 +176,74 @@ const GameBoard: React.FC<GameBoardProps> = ({}) => {
   };
 
   return (
-    <GameBoardWrapper>
-      {gameComplete ? (
-        <>
-          <VictoryMessage>
-            Congratulations! You've won the game with a score of {score}.
-          </VictoryMessage>
-          <TimerWrapper>
-            Time: {((Date.now() - startTime) / 1000).toFixed(1)} seconds
-          </TimerWrapper>
-        </>
-      ) : (
-        <>
-          <ResetButton onClick={handleResetGame}>Reset Game</ResetButton>
-          <DifficultySelector
-            value={difficultyLevel}
-            onChange={(e) => setDifficultyLevel(e.target.value)}
-          >
-            <option value="easy">Easy</option>
-            <option value="medium">Medium</option>
-            <option value="hard">Hard</option>
-          </DifficultySelector>
-          <ThemeSelector
-            value={theme}
-            onChange={(e) => setTheme(e.target.value)}
-          >
-            <option value="animals">Animals</option>
-            <option value="fruits">Fruits</option>
-            <option value="colors">Colors</option>
-          </ThemeSelector>
-          <SizeSelector value={size} onChange={(e) => setSize(e.target.value)}>
-            <option value="small">Small</option>
-            <option value="medium">Medium</option>
-            <option value="large">Large</option>
-          </SizeSelector>
-          <TimerWrapper>
-            Time:{" "}
-            {startTime === 0
-              ? "00:00"
-              : ((Date.now() - startTime) / 1000).toFixed(1)}{" "}
-            seconds
-          </TimerWrapper>
-          <ScoreWrapper>Score: {score}</ScoreWrapper>
-          {/* Render the cards */}
-          {cards.map((value, index) => (
-            <Card
-              key={index}
-              value={value}
-              onClick={() => handleCardClick(index)}
-              flipped={
-                flippedCards.includes(index) || matchedCards.includes(index)
-              }
-            />
-          ))}
-        </>
-      )}
-    </GameBoardWrapper>
+    <>
+      <GlobalStyle />
+      <Container>
+        <GameBoardWrapper>
+          {gameComplete ? (
+            <>
+              <VictoryMessage>
+                Congratulations! You've won the game with a score of {score}.
+              </VictoryMessage>
+              <TimerWrapper>
+                Time: {((Date.now() - startTime) / 1000).toFixed(1)} seconds
+              </TimerWrapper>
+            </>
+          ) : (
+            <>
+              <Header>
+                <ResetButton onClick={handleResetGame}>Reset Game</ResetButton>
+                <DifficultySelector
+                  value={difficultyLevel}
+                  onChange={(e) => setDifficultyLevel(e.target.value)}
+                >
+                  <option value="easy">Easy</option>
+                  <option value="medium">Medium</option>
+                  <option value="hard">Hard</option>
+                </DifficultySelector>
+                <ThemeSelector
+                  value={theme}
+                  onChange={(e) => setTheme(e.target.value)}
+                >
+                  <option value="animals">Animals</option>
+                  <option value="fruits">Fruits</option>
+                  <option value="colors">Colors</option>
+                </ThemeSelector>
+                <SizeSelector
+                  value={size}
+                  onChange={(e) => setSize(e.target.value)}
+                >
+                  <option value="small">Small</option>
+                  <option value="medium">Medium</option>
+                  <option value="large">Large</option>
+                </SizeSelector>
+                <TimerWrapper>
+                  Time:{" "}
+                  {startTime === 0
+                    ? "00:00"
+                    : ((Date.now() - startTime) / 1000).toFixed(1)}{" "}
+                  seconds
+                </TimerWrapper>
+                <ScoreWrapper>Score: {score}</ScoreWrapper>
+              </Header>
+              <Cards>
+                {cards.map((value, index) => (
+                  <Card
+                    key={index}
+                    value={value}
+                    onClick={() => handleCardClick(index)}
+                    flipped={
+                      flippedCards.includes(index) ||
+                      matchedCards.includes(index)
+                    }
+                  />
+                ))}
+              </Cards>
+            </>
+          )}
+        </GameBoardWrapper>
+      </Container>
+    </>
   );
 };
 export default GameBoard;
